@@ -1,4 +1,4 @@
-//时间 开盘价 收盘价 最低价 最高价
+// 时间 开盘价 收盘价 最低价 最高价
 const DATA = [
   ['2013/4/3', 2232.69, 2225.29, 2217.25, 2241.34],
   ['2013/4/8', 2196.24, 2211.59, 2180.67, 2212.59],
@@ -43,7 +43,8 @@ const DATA = [
   ['2013/6/5', 2270.71, 2270.93, 2260.87, 2276.86],
   ['2013/6/6', 2264.43, 2242.11, 2240.07, 2266.69],
   ['2013/6/7', 2242.26, 2210.9, 2205.07, 2250.63],
-  ['2013/6/13', 2190.1, 2148.35, 2126.22, 2190.1]
+  ['2013/6/8', 2190.1, 2148.35, 2126.22, 2190.1],
+  ['2013/6/9', 2290.1, 2248.35, 2226.22, 2290.1]
 ]
 
 const canvas = document.getElementById('canvas')
@@ -51,7 +52,7 @@ const ctx = makeHighRes(canvas)
 const statistics = splitData(DATA)
 // 基本绘图配置
 const options = {
-  chartZone: [50, 50, 1000, 600], // 坐标系的区域
+  chartZone: [50, 50, 1300, 600], // 坐标系的区域
   yAxisLabel: ['2100', '2150', '2200', '2250', '2300', '2350'], // y轴坐标
   xAxisLabel: statistics.categoryData, // x轴坐标
   data: statistics.values
@@ -118,7 +119,7 @@ function drawYLabels (options) {
     ctx.lineTo(options.chartZone[0], height)
     ctx.stroke()
     // 绘制辅助线
-    if(index === 0) return; // 排除x轴
+    if (index === 0) return // 排除x轴
     ctx.beginPath()
     ctx.strokeStyle = '#eaeaea'
     ctx.moveTo(options.chartZone[0], height)
@@ -159,6 +160,8 @@ function drawData (options) {
   const data = options.data
   const xLength = options.chartZone[2] - options.chartZone[0]
   const gap = xLength / options.xAxisLabel.length
+  const openingPriceCoords = []
+  const closingPriceCoords = []
 
   data.forEach((item, index) => {
     // 获取绘图颜色
@@ -172,12 +175,43 @@ function drawData (options) {
     ctx.lineTo(activeX, transCoord(item[3]))
     ctx.closePath()
     ctx.stroke()
+
+    const openingPrice = transCoord(item[0]) // 开盘价
+    const closingPrice = transCoord(item[1]) // 收盘价
+    openingPriceCoords.push([activeX, openingPrice])
+    closingPriceCoords.push([activeX, closingPrice])
+
     // 绘制开盘收盘矩形
     if (item[0] >= item[1]) {
-      ctx.fillRect(activeX - 5, transCoord(item[0]), 10, transCoord(item[1]) - transCoord(item[0]))
+      ctx.fillRect(activeX - 5, openingPrice, 10, closingPrice - openingPrice)
     } else {
-      ctx.fillRect(activeX - 5, transCoord(item[1]), 10, transCoord(item[0]) - transCoord(item[1]))
+      ctx.fillRect(activeX - 5, closingPrice, 10, openingPrice - closingPrice)
     }
+  })
+
+  // 绘制曲线图
+  drawCurve(openingPriceCoords, '#f9bb2d') // 开盘价曲线图
+  drawCurve(closingPriceCoords, 'blue') // 收盘价曲线图
+}
+
+/**
+ * 绘制曲线图
+ */
+function drawCurve (data, style) {
+  data.forEach((item, index) => {
+    const nextPoint = data[index + 1]
+    if (!nextPoint) return
+
+    // item[1] > nextPoint[1]
+    ctx.beginPath()
+    ctx.moveTo(...item)
+    ctx.quadraticCurveTo(
+      (item[0] + nextPoint[0]) / 2,
+      Math.random() > 0.5 ? Math.min(item[1], nextPoint[1]) : Math.max(item[1], nextPoint[1]),
+      ...nextPoint
+    )
+    ctx.strokeStyle = style
+    ctx.stroke()
   })
 }
 
