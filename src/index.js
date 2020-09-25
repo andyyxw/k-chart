@@ -198,20 +198,23 @@ function drawData (options) {
  * 绘制曲线图
  */
 function drawCurve (data, style) {
+  let lastPoint = data[0] // 缓存上一条线的终点
   data.forEach((item, index) => {
-    const nextPoint = data[index + 1]
-    if (!nextPoint) return
+    if (index === 0) return
 
-    // item[1] > nextPoint[1]
+    const ctrlPoint = item // 当前数据点为本条线的控制点
+    const next = data[index + 1] || item
+    const nextPoint = [(item[0] + next[0]) / 2, (item[1] + next[1]) / 2] // 两个数据点的中点为本条线的终点
+
     ctx.beginPath()
-    ctx.moveTo(...item)
+    ctx.moveTo(...lastPoint)
     ctx.quadraticCurveTo(
-      (item[0] + nextPoint[0]) / 2,
-      Math.random() > 0.5 ? Math.min(item[1], nextPoint[1]) : Math.max(item[1], nextPoint[1]),
+      ...ctrlPoint,
       ...nextPoint
     )
     ctx.strokeStyle = style
     ctx.stroke()
+    lastPoint = nextPoint
   })
 }
 
