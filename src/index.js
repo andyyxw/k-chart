@@ -190,7 +190,7 @@ function drawData (options) {
   })
 
   // 绘制曲线图
-  drawCurve(openingPriceCoords, '#f9bb2d') // 开盘价曲线图
+  // drawCurve(openingPriceCoords, '#f9bb2d') // 开盘价曲线图
   drawCurve(closingPriceCoords, 'blue') // 收盘价曲线图
 }
 
@@ -204,17 +204,19 @@ function drawCurve (data, style) {
 
     const ctrlPoint = item // 当前数据点为本条线的控制点
     const next = data[index + 1] || item
-    const nextPoint = [(item[0] + next[0]) / 2, (item[1] + next[1]) / 2] // 两个数据点的中点为本条线的终点
+    // 计算每段曲线终点
+    const nextPoint = [(item[0] + next[0]) / 2, (item[1] + next[1]) / 2] // 两个数据点的中点
+    const nextPoin2 = [(nextPoint[0] + next[0]) / 2, (nextPoint[1] + next[1]) / 2]
 
     ctx.beginPath()
     ctx.moveTo(...lastPoint)
     ctx.quadraticCurveTo(
       ...ctrlPoint,
-      ...nextPoint
+      ...nextPoin2
     )
     ctx.strokeStyle = style
     ctx.stroke()
-    lastPoint = nextPoint
+    lastPoint = nextPoin2
   })
 }
 
