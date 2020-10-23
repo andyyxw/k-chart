@@ -8,15 +8,21 @@
       body {
         margin: 0;
         padding: 0;
+        width: 100%;
+        height: 100%;
       }
 
       canvas {
-        background-color: white;
+        position: absolute;
+      }
+
+      #background-layer {
+        z-index: 1;
       }
     </style>
   </head>
   <body>
-    <canvas id="canvas" height="700" width="1400"></canvas>
+    <canvas id="background-layer" width="1400" height="700"></canvas>
     <script src="./src/index.js"></script>
   </body>
 </html>
