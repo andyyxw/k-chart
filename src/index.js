@@ -186,7 +186,7 @@ class KChart {
     const gap = yLength / (labels.length - 1) // 坐标点之间的间隔
 
     labels.forEach((label, index) => {
-    // 绘制坐标文字
+      // 绘制坐标文字
       const height = chartZone[3] - index * gap
       this.ctx.textAlign = 'right'
       this.ctx.fillText(label, chartZone[0] - 14, height + 3)
